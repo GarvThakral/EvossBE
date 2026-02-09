@@ -241,7 +241,9 @@ async function readFromGitHub(page: PageKey) {
     },
   });
   if (!response.ok) {
-    throw new Error(`GitHub read failed: ${response.status}`);
+    const text = await response.text().catch(() => '');
+    const snippet = text ? ` ${text.slice(0, 300)}` : '';
+    throw new Error(`GitHub read failed: ${response.status}${snippet}`);
   }
   const body = await response.json();
   const decoded = Buffer.from(body.content, 'base64').toString('utf8');
